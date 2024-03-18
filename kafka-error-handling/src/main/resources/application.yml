@@ -1,14 +1,32 @@
 spring:
+  application:
+    name: kafka-error-handling
   cloud:
     stream:
-      function:
+      bindings:
+        processPendingTransfer-in-0:
+          destination: pending-transfer
+        processPendingTransfer-in-1:
+          destination: pending-transfer-dlt
+        processPendingTransfer-in-2:
+          destination: exchange-rate
+        processPendingTransfer-out-0:
+          destination: processed-transfer
+        processPendingTransfer-out-1:
+          destination: pending-transfer-dlt
+      kafka:
         bindings:
-          processPendingTransfer-in-0:
-            destination: pending-transfer
-          processPendingTransfer-in-1:
-            destination: exchange-rate
-          processPendingTransfer-out-0:
-            destination: processed-transfer
+          # https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-streams-binder/error-handling.html#_handling_record_keys_in_dltawareprocessor
+          pending-transfer-dlt.producer.configuration.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        streams:
+          binder:
+            auto-create-topics: false
+            # https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-streams-binder/error-handling.html#handling-deserialization-exceptions-in-the-binder
+            # https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-streams-binder/error-handling.html#handling-production-exceptions-in-the-binder
+            deserialization-exception-handler: sendToDlq
+            configuration:
+              processing.guarantee: exactly_once_v2
+              spring.json.trusted.packages: '*'
   h2:
     console:
       enabled: true
@@ -18,6 +36,7 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      isolation-level: read_committed
       properties:
         spring.json.trusted.packages: '*'
 management:

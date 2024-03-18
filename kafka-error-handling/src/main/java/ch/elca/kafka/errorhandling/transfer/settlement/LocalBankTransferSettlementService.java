@@ -4,10 +4,12 @@ import ch.elca.kafka.errorhandling.account.Account;
 import ch.elca.kafka.errorhandling.account.AccountRepository;
 import ch.elca.kafka.errorhandling.transfer.Transfer;
 import ch.elca.kafka.errorhandling.transfer.pending.TransferRepository;
+import ch.elca.kafka.errorhandling.transfer.processing.EnrichedTransfer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -23,7 +25,9 @@ public class LocalBankTransferSettlementService {
     private final AccountRepository accountRepository;
 
     @KafkaListener(groupId = "LocalBankTransferSettlingService", topics = PROCESSED_TRANSFER_TOPIC)
-    public void settle(Transfer transfer) {
+    @Transactional("transactionManager")
+    public void settle(EnrichedTransfer enrichedTransfer) {
+        Transfer transfer = enrichedTransfer.transfer();
         Account fromAccount = accountRepository.getByIban(transfer.getIbanFrom());
         BigDecimal newBalance = fromAccount.getBalance().subtract(transfer.getAmountInLocalCurrency());
         fromAccount.setBalance(newBalance);

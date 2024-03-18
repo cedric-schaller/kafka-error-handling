@@ -2,6 +2,7 @@ package ch.elca.kafka.errorhandling.config;
 
 import ch.elca.kafka.errorhandling.exchangerate.ExchangeRate;
 import ch.elca.kafka.errorhandling.transfer.Transfer;
+import ch.elca.kafka.errorhandling.transfer.TransferDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -40,8 +41,15 @@ public class KafkaConfig {
     }
 
     @Bean
+    public ProducerFactory<String, TransferDto> transferDtoProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    @Bean
     public KafkaTemplate<String, Transfer> pendingTransferKafkaTemplate() {
-        var kafkaTemplate = new KafkaTemplate<>(pendingTransferProducerFactory(), producerConfigs());
+        Map<String, Object> producerConfigs = producerConfigs();
+        producerConfigs.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "tx-");
+        var kafkaTemplate = new KafkaTemplate<>(pendingTransferProducerFactory(), producerConfigs);
         kafkaTemplate.setDefaultTopic(PENDING_TRANSFER_TOPIC);
         return kafkaTemplate;
     }
@@ -51,5 +59,10 @@ public class KafkaConfig {
         var kafkaTemplate = new KafkaTemplate<>(exchangeRateProducerFactory(), producerConfigs());
         kafkaTemplate.setDefaultTopic(EXCHANGE_RATE_TOPIC);
         return kafkaTemplate;
+    }
+
+    @Bean
+    public KafkaTemplate<String, TransferDto> defaultRetryTopicKafkaTemplate(ProducerFactory<String, TransferDto> pf) {
+        return new KafkaTemplate<>(pf, producerConfigs());
     }
 }
