@@ -1,0 +1,97 @@
+{
+  "info": {
+    "_postman_id": "e51706d5-d56e-4034-8fe3-830e94b1efae",
+    "name": "Kafka summit",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "7425977"
+  },
+  "item": [
+    {
+      "name": "New pending transfer",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"d7e98be4-e0d3-4cf2-a841-049f0d2a4b3\",\n  \"datetime\": 1706876151.656258157,\n  \"ibanFrom\": \"CH5604835012345678009\",\n  \"ibanTo\": \"GB33BUKB20201555555555\",\n  \"amount\": 2,\n  \"currency\": \"GBP\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/transfer/d7e98be4-e0d3-4cf2-a841-049f0d2a4b3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "transfer",
+            "d7e98be4-e0d3-4cf2-a841-049f0d2a4b3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DB error (currency too long)",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"b7e98be4-e0d3-4cf2-a841-049f0df37932\",\n  \"datetime\": 1706876151.656258157,\n  \"ibanFrom\": \"CH5604835012345678009\",\n  \"ibanTo\": \"GB33BUKB20201555555555\",\n  \"amount\": 2,\n  \"currency\": \"TooLong\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/transfer/b7e98be4-e0d3-4cf2-a841-049f0df37932",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "transfer",
+            "b7e98be4-e0d3-4cf2-a841-049f0df37932"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Streams error (currency does not exist)",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"b7e98be4-e0d3-4cf2-a841-049f0df37923\",\n  \"datetime\": 1706876151.656258157,\n  \"ibanFrom\": \"CH5604835012345678009\",\n  \"ibanTo\": \"GB33BUKB20201555555555\",\n  \"amount\": 2,\n  \"currency\": \"NPE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/transfer/b7e98be4-e0d3-4cf2-a841-049f0df37923",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "transfer",
+            "b7e98be4-e0d3-4cf2-a841-049f0df37923"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

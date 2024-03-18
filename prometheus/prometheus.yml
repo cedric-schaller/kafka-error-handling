@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+
+  - job_name: 'kafka_error_handling_app'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - '10.0.2.15:8080'

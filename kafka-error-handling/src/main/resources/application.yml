@@ -1,0 +1,30 @@
+spring:
+  cloud:
+    stream:
+      function:
+        bindings:
+          processPendingTransfer-in-0:
+            destination: pending-transfer
+          processPendingTransfer-in-1:
+            destination: exchange-rate
+          processPendingTransfer-out-0:
+            destination: processed-transfer
+  h2:
+    console:
+      enabled: true
+  kafka:
+    bootstrap-servers: "localhost:29092"
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
